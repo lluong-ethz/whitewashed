@@ -6,6 +6,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from sklearn.linear_model import LogisticRegression
 
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
 
 def main():
 
@@ -68,11 +70,13 @@ def main():
         print(mapping[i], model_features[i])
     print()
 
+    y_pred = model.predict(X_val)
 
-
-
+    print("ACCURACY: " + str(accuracy_score(Y_val, y_pred)))
+    print("RECALL: " + str(recall_score(Y_val, y_pred)))
+    print("F1: " + str(f1_score(Y_val, y_pred)))
+    print("PRECISION: " + str(precision_score(Y_val, y_pred)))
     
-
 
 if __name__ == '__main__':
     main()

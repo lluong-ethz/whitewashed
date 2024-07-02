@@ -8,21 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 
 
-def bow(full = False):
-
-    tweets = []
-    labels = []
-
-    if(not full):
-        load_tweets(SMALL_TRAIN_POS, 0, tweets, labels)
-        load_tweets(SMALL_TRAIN_NEG, 1, tweets, labels)
-    else:
-        load_tweets(TRAIN_POS, 0, tweets, labels)
-        load_tweets(TRAIN_NEG, 0, tweets, labels)
-
-    # Convert to NumPy array to facilitate indexing
-    tweets = np.array(tweets)
-    labels = np.array(labels)
+def bow(tweets, labels):
 
     X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
 

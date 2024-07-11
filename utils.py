@@ -1,6 +1,10 @@
 import pickle
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+import re
+from keras.preprocessing.text import Tokenizer
+from keras.utils import pad_sequences
+  
 
 SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
 SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
@@ -17,6 +21,32 @@ def load_tweets(filename, label, tweets, labels):
 def clean_text(text):
      return [w.lower().replace("\n", "").split() for w in text]
 
+# Preprocess tweets (simple example, adapt as needed)
+def preprocess_tweet(tweet):
+    # Convert to lowercase
+    tweet = tweet.lower()
+    
+    # Remove URLs
+    tweet = re.sub(r'http\S+|www\S+|https\S+', '', tweet, flags=re.MULTILINE)
+    
+    # Remove user mentions
+    tweet = re.sub(r'@\w+', '', tweet)
+    
+    # Remove hashtags
+    tweet = re.sub(r'#\w+', '', tweet)
+    
+    # Remove special characters, numbers, and punctuation
+    tweet = re.sub(r'\W', ' ', tweet)
+    tweet = re.sub(r'\d', '', tweet)
+    
+    # Remove extra spaces
+    tweet = re.sub(r'\s+', ' ', tweet).strip()
+    
+    # Tokenize by splitting on whitespace
+    words = tweet.split()
+    
+    return words
+
 def split_train_test(tweets, labels, seed):
     np.random.seed(seed)
 
@@ -26,6 +56,19 @@ def split_train_test(tweets, labels, seed):
     val_indices = shuffled_indices[split_idx:]
 
     return tweets[train_indices], tweets[val_indices], labels[train_indices], labels[val_indices]
+
+def get_tokens(x_train, x_val):
+    tokenizer = Tokenizer(num_words=5000)
+    tokenizer.fit_on_texts(x_train)
+    tokens_train = tokenizer.texts_to_sequences(x_train)
+    tokens_val = tokenizer.texts_to_sequences(x_val)
+
+    # using average length of word in English
+    max_sequence_length = 35
+    tokens_train = pad_sequences(tokens_train, maxlen=max_sequence_length)
+    tokens_val = pad_sequences(tokens_val, maxlen=max_sequence_length)
+
+    return tokens_train, tokens_val
 
 def get_top_pos_neg(model_features, words, k):
     # increasing order

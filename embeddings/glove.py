@@ -22,31 +22,6 @@ def load_glove_embeddings(glove_file):
             embeddings_index[word] = coefs
     return embeddings_index
 
-# Preprocess tweets (simple example, adapt as needed)
-def preprocess_tweet(tweet):
-    # Convert to lowercase
-    tweet = tweet.lower()
-    
-    # Remove URLs
-    tweet = re.sub(r'http\S+|www\S+|https\S+', '', tweet, flags=re.MULTILINE)
-    
-    # Remove user mentions
-    #tweet = re.sub(r'@\w+', '', tweet)
-    
-    # Remove hashtags
-    tweet = re.sub(r'#\w+', '', tweet)
-    
-    # Remove special characters, numbers, and punctuation
-    tweet = re.sub(r'\W', ' ', tweet)
-    tweet = re.sub(r'\d', '', tweet)
-    
-    # Remove extra spaces
-    tweet = re.sub(r'\s+', ' ', tweet).strip()
-    
-    # Tokenize by splitting on whitespace
-    words = tweet.split()
-    
-    return words
 
 # Convert tweets to GloVe vector representations
 def tweet_to_glove(tweet, embeddings_index, embedding_dim=50):

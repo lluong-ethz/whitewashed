@@ -60,4 +60,10 @@ def test_simple_nn(test_loader, model):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print(f'Test Accuracy: {correc
+    print(f'Test Accuracy: {correct / total:.4f}')
+    
+    
+
+
+
+

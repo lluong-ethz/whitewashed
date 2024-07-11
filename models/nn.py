@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from utils import *
 
 class simple_nn(nn.Module):
-    def __init__(self, input_dim = 50):
+    def __init__(self, input_dim):
         super(simple_nn, self).__init__()
         self.fc1 = nn.Linear(input_dim, 256)
         self.dropout1 = nn.Dropout(0.5)
@@ -25,12 +25,13 @@ class simple_nn(nn.Module):
         x = self.sigmoid(self.fc4(x))
         return x
 
-def train_simple_nn(train_loader):
-    model = simple_nn()
+def train_simple_nn(train_loader, num_features):
+    model = simple_nn(input_dim=num_features)
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    epochs = 1
+    #1, 25, 100
+    epochs = 25
     for epoch in range(epochs):
         model.train()
         running_loss = 0.0
@@ -59,10 +60,4 @@ def test_simple_nn(test_loader, model):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print(f'Test Accuracy: {correct / total:.4f}')
-    
-    
-
-
-
-
+    print(f'Test Accuracy: {correc

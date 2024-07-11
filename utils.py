@@ -2,10 +2,11 @@ import pickle
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
-SMALL_TRAIN_NEG = 'train_neg.txt'
-SMALL_TRAIN_POS = 'train_pos.txt'
-TRAIN_NEG = 'train_neg_full.txt'
-TRAIN_POS = 'train_pos_full.txt'
+SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
+SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
+TRAIN_NEG = 'data/twitter-datasets/train_neg_full.txt'
+TRAIN_POS = 'data/twitter-datasets/train_pos_full.txt'
+GLOVE_WIKI_50D = 'data/glove_wiki/glove.6B.50d.txt'
 
 def load_tweets(filename, label, tweets, labels):
         with open(filename, 'r', encoding='utf-8') as f:
@@ -49,5 +50,3 @@ def get_basic_metrics(pred, gt):
     print("RECALL: " + str(recall_score(gt, pred)))
     print("F1: " + str(f1_score(gt, pred)))
     print("PRECISION: " + str(precision_score(gt, pred)))
-
-

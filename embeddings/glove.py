@@ -2,15 +2,14 @@
 import pickle
 import numpy as np
 from utils import *
-import torch
-import tensorflow as tf
+#import torch
+#import tensorflow as tf
 
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import re
-
 
 # Load GloVe embeddings
 def load_glove_embeddings(glove_file):
@@ -32,7 +31,7 @@ def preprocess_tweet(tweet):
     tweet = re.sub(r'http\S+|www\S+|https\S+', '', tweet, flags=re.MULTILINE)
     
     # Remove user mentions
-    tweet = re.sub(r'@\w+', '', tweet)
+    #tweet = re.sub(r'@\w+', '', tweet)
     
     # Remove hashtags
     tweet = re.sub(r'#\w+', '', tweet)
@@ -50,13 +49,21 @@ def preprocess_tweet(tweet):
     return words
 
 # Convert tweets to GloVe vector representations
-def tweet_to_glove_vector(tweet, embeddings_index, embedding_dim=100):
+def tweet_to_glove(tweet, embeddings_index, embedding_dim=50):
     words = preprocess_tweet(tweet)
     vectors = [embeddings_index.get(word, np.zeros(embedding_dim)) for word in words]
     if vectors:
         return np.mean(vectors, axis=0)
     else:
         return np.zeros(embedding_dim)
+
+def all_tweets_to_glove(tweets, path):
+    embeddings_index = load_glove_embeddings(path)
+    return [tweet_to_glove(tweet, embeddings_index, 50) for tweet in tweets]
+    
+
+    
+# SHOULD WE DO LOGISTIC REGRESSION HERE TOO?
 
 #glove_embeddings_path = 'glove_wiki/glove.6B.100d.txt'
 #embeddings_index = load_glove_embeddings(glove_embeddings_path)

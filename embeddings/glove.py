@@ -2,6 +2,7 @@
 import pickle
 import numpy as np
 from utils import *
+from sklearn.metrics import accuracy_score, classification_report
 #import torch
 #import tensorflow as tf
 
@@ -40,37 +41,37 @@ def all_tweets_to_glove(tweets, path):
     
 # SHOULD WE DO LOGISTIC REGRESSION HERE TOO?
 
-#glove_embeddings_path = 'glove_wiki/glove.6B.100d.txt'
-#embeddings_index = load_glove_embeddings(glove_embeddings_path)
+glove_embeddings_path = 'glove_wiki/glove.6B.100d.txt'
+embeddings_index = load_glove_embeddings(glove_embeddings_path)
 
 # Load your data
-#tweets = []
-#labels = []
-#load_tweets(SMALL_TRAIN_POS, 0, tweets, labels)
-#load_tweets(SMALL_TRAIN_NEG, 1, tweets, labels)
+tweets = []
+labels = []
+load_tweets(SMALL_TRAIN_POS, 0, tweets, labels)
+load_tweets(SMALL_TRAIN_NEG, 1, tweets, labels)
 
-#print(tweet_to_glove_vector(tweets[0], embeddings_index))
+print(tweet_to_glove(tweets[0], embeddings_index))
 
-#tweet_emb = {}
+tweet_emb = {}
 
-#contains all the embeddings
+# contains all the embeddings
 
-#tweet_emb['vector'] = [tweet_to_glove_vector(tweet, embeddings_index) for tweet in tweets]
-# print(tweet_emb['vector'][:10])
-# tweet_emb['label'] = labels
+tweet_emb['vector'] = [tweet_to_glove(tweet, embeddings_index) for tweet in tweets]
+print(tweet_emb['vector'][:10])
+tweet_emb['label'] = labels
 
-# # Prepare features and labels
-# X = tweet_emb['vector']
-# y = tweet_emb['label']  # Assuming 'label' column contains 0 for negative and 1 for positive
+# Prepare features and labels
+X = tweet_emb['vector']
+y = tweet_emb['label']  # Assuming 'label' column contains 0 for negative and 1 for positive
 
-# # Train/test split
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# # Train a classifier
-# clf = LogisticRegression()
-# clf.fit(X_train, y_train)
+# Train a classifier
+clf = LogisticRegression()
+clf.fit(X_train, y_train)
 
-# # Predict and evaluate
-# y_pred = clf.predict(X_test)
-# print('Accuracy:', accuracy_score(y_test, y_pred))
-# print(classification_report(y_test, y_pred))
+# Predict and evaluate
+y_pred = clf.predict(X_test)
+print('Accuracy:', accuracy_score(y_test, y_pred))
+print(classification_report(y_test, y_pred))

@@ -28,11 +28,11 @@ def main():
     X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
 
     # GLOVE
-    #X_train = all_tweets_to_glove(X_train, GLOVE_WIKI_50D)
+    X_train = all_tweets_to_glove(X_train,  GLOVE_TWEET_200D, 200)
     # Save the list to a file
     #with open('glove_train.pkl', 'wb') as f:
     #    pickle.dump(X_train, f)
-    #X_val = all_tweets_to_glove(X_val, GLOVE_WIKI_50D)
+    X_val = all_tweets_to_glove(X_val, GLOVE_TWEET_200D, 200)
     #with open('glove_val.pkl', 'wb') as f:
     #    pickle.dump(X_val, f)
 
@@ -50,28 +50,32 @@ def main():
     #train_dataset = TensorDataset(torch.from_numpy(X_train.astype(np.float32)), torch.from_numpy(Y_train))
     #test_dataset = TensorDataset(torch.from_numpy(X_val.astype(np.float32)), torch.from_numpy(Y_val))
 
+    # NN WITH GLOVE
+    train_dataset = TensorDataset(torch.tensor(X_train).to(torch.float32), torch.tensor(Y_train).to(torch.float32))
+    test_dataset = TensorDataset(torch.tensor(X_val).to(torch.float32), torch.tensor(Y_val).to(torch.float32))
+
     # RNN
     #batch_size = 2
-    batch_size = 32
+    #batch_size = 32
 
-    tokens_train, tokens_val = get_tokens(X_train, X_val)
-    train_dataset = TensorDataset(torch.tensor(tokens_train, dtype=torch.long), torch.from_numpy(Y_train.astype(np.float32)))
-    test_dataset = TensorDataset(torch.tensor(tokens_val, dtype=torch.long), torch.from_numpy(Y_val.astype(np.float32)))    
+    #tokens_train, tokens_val = get_tokens(X_train, X_val)
+    #train_dataset = TensorDataset(torch.tensor(tokens_train, dtype=torch.long), torch.from_numpy(Y_train.astype(np.float32)))
+    #test_dataset = TensorDataset(torch.tensor(tokens_val, dtype=torch.long), torch.from_numpy(Y_val.astype(np.float32)))    
 
-    train_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    #train_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
+    #test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
-    model = train_rnn(train_loader)
-    test_rnn(test_loader, model)
+    #model = train_rnn(train_loader)
+    #test_rnn(test_loader, model)
 
 
     # NEURAL NETWORK
-    #batch_size = 32
-    #train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    #test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    batch_size = 32
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
-    #model = train_simple_nn(train_loader, num_features)
-    #test_simple_nn(test_loader, model)
+    model = train_simple_nn(train_loader, 200)
+    test_simple_nn(test_loader, model)
 
 if __name__ == '__main__':
     main()

@@ -26,16 +26,16 @@ def load_glove_embeddings(glove_file):
 
 # Convert tweets to GloVe vector representations
 def tweet_to_glove(tweet, embeddings_index, embedding_dim=50):
-    words = preprocess_tweet(tweet)
+    #words = preprocess_tweet(tweet)
     vectors = [embeddings_index.get(word, np.zeros(embedding_dim)) for word in words]
     if vectors:
         return np.mean(vectors, axis=0)
     else:
         return np.zeros(embedding_dim)
 
-def all_tweets_to_glove(tweets, path):
+def all_tweets_to_glove(tweets, path, embedding_dim = 50):
     embeddings_index = load_glove_embeddings(path)
-    return [tweet_to_glove(tweet, embeddings_index, 50) for tweet in tweets]
+    return [tweet_to_glove(tweet, embeddings_index, embedding_dim = embedding_dim) for tweet in tweets]
     
 
     

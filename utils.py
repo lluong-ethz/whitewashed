@@ -2,50 +2,26 @@ import pickle
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import re
-from keras.preprocessing.text import Tokenizer
-from keras.utils import pad_sequences
+#from keras.preprocessing.text import Tokenizer
+#from keras.utils import pad_sequences
   
 
 SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
 SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
 TRAIN_NEG = 'data/twitter-datasets/train_neg_full.txt'
 TRAIN_POS = 'data/twitter-datasets/train_pos_full.txt'
+
 GLOVE_WIKI_50D = 'data/glove_wiki/glove.6B.50d.txt'
+GLOVE_TWEET_50D = 'data/glove_twitter/glove.twitter.27B.50d.txt'
+GLOVE_TWEET_200D = 'data/glove_twitter/glove.twitter.27B.200d.txt'
+
 
 def load_tweets(filename, label, tweets, labels):
         with open(filename, 'r', encoding='utf-8') as f:
             for line in f:
                 tweets.append(line.rstrip())
                 labels.append(label)
-
-def clean_text(text):
-     return [w.lower().replace("\n", "").split() for w in text]
-
-# Preprocess tweets (simple example, adapt as needed)
-def preprocess_tweet(tweet):
-    # Convert to lowercase
-    tweet = tweet.lower()
     
-    # Remove URLs
-    tweet = re.sub(r'http\S+|www\S+|https\S+', '', tweet, flags=re.MULTILINE)
-    
-    # Remove user mentions
-    tweet = re.sub(r'@\w+', '', tweet)
-    
-    # Remove hashtags
-    tweet = re.sub(r'#\w+', '', tweet)
-    
-    # Remove special characters, numbers, and punctuation
-    tweet = re.sub(r'\W', ' ', tweet)
-    tweet = re.sub(r'\d', '', tweet)
-    
-    # Remove extra spaces
-    tweet = re.sub(r'\s+', ' ', tweet).strip()
-    
-    # Tokenize by splitting on whitespace
-    words = tweet.split()
-    
-    return words
 
 def split_train_test(tweets, labels, seed):
     np.random.seed(seed)

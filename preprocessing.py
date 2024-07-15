@@ -1,6 +1,9 @@
 import re
 from itertools import groupby
 from utils import *
+import string
+
+# TODO: why is text looking super weird?? did I split twice?
 
 def delete_duplicates(tweets, labels):
     seen = set()
@@ -11,9 +14,11 @@ def delete_duplicates(tweets, labels):
             seen.add(tuple(tweets[i]))
     return [tweets[i] for i in indices], [labels[i] for i in indices]
 
-# returns splitted!
 def remove_repeated(tweets):
     return [[re.sub(r'(.)\1{2,}', '', word) for word in tweet] for tweet in tweets]
+
+def remove_punctuation(tweets):
+    return [[word.translate(str.maketrans('', '', string.punctuation)) for word in tweet] for tweet in tweets]
 
 def lowercase(tweets):
      return [[w.lower().replace("\n", "") for w in tweet] for tweet in tweets]
@@ -27,8 +32,8 @@ NEUTRAL_WORDS = [
     "hadn’t", "has", "hasn’t", "have", "haven’t", "having", "he", "her", "here", 
     "him", "his", "how", "I", "if", "in", "into", "is", "isn’t", "it", "its", 
     "just", "like", "make", "me", "might", "more", "most", "mustn’t", "my", "no", 
-    "not", "of", "off", "on", "once", "only", "or", "other", "our", "out", "over", 
-    "said", "same", "see", "should", "shouldn’t", "so", "some", "such", "t", "than", 
+    "of", "off", "on", "once", "only", "or", "other", "our", "out", "over", 
+    "said", "same", "see", "should", "shouldn’t", "so", "some", "such", "than", 
     "that", "the", "their", "them", "then", "there", "these", "they", "this", 
     "those", "through", "to", "too", "under", "until", "up", "very", "was", 
     "wasn’t", "we", "were", "weren’t", "what", "when", "where", "which", "while", 
@@ -42,7 +47,7 @@ def remove_words(tweets, words_to_remove):
     
         filtered_words = [word for word in tweet if word not in words_to_remove]
     
-        output.append(' '.join(filtered_words))
+        output.append(filtered_words)
     
     return output
 
@@ -53,7 +58,6 @@ EXAMPLE_NEGATIVE = ["sad", "bad", "hate", "terrible", "awful", "ugly", "mourn", 
 def handle_negation(tweets, negations, positives, negatives):
     output = []
     for tweet in tweets:
-        print(tweet)
         copy_tweet = tweet.copy()
 
         for i in range(len(tweet)-1):
@@ -66,7 +70,7 @@ def handle_negation(tweets, negations, positives, negatives):
                 idx = negatives.index(tweet[i+1])
                 copy_tweet[i+1] = positives[idx]
         
-        output.append(tweet)
+        output.append(copy_tweet)
     return output
 
 ABBREVIATIONS = {
@@ -87,21 +91,35 @@ ABBREVIATIONS = {
 
 def expand_abbreviations(tweets, abbreviation_dict):
     return [[abbreviation_dict.get(word, word) for word in tweet] for tweet in tweets]
+
+def remove_null_strings(tweets):
+    outputs = []
+    for tweet in tweets:
+        cleaned = []
+        for word in tweet:
+            if(word):
+                cleaned.append(word)
+        outputs.append(cleaned)
+    return outputs
  
-       
 def preprocess(tweets, labels):
     tweets = [tweet.split() for tweet in tweets]
 
     tweets, labels = delete_duplicates(tweets, labels)
+   
     tweets = remove_repeated(tweets)
     tweets = lowercase(tweets)
+    tweets = remove_punctuation(tweets)
+
+    tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
 
     tweets = remove_words(tweets, USER_URL)
     tweets = remove_words(tweets, NEUTRAL_WORDS)
 
-    tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
-
     tweets = expand_abbreviations(tweets, ABBREVIATIONS)
+
+    tweets = remove_null_strings(tweets)
+    print(tweets[0])
 
     return tweets, labels
 
@@ -118,7 +136,7 @@ def main():
         load_tweets(TRAIN_POS, 0, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
     
-    preprocess(tweets, labels)
+    tweets, labels = preprocess(tweets, labels)
 
 if __name__ == '__main__':
     main()

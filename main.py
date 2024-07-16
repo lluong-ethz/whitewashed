@@ -22,7 +22,9 @@ def main():
         load_tweets(TRAIN_POS, 0, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
     
+    print(tweets[0])
     tweets, labels = preprocess(tweets, labels)
+    print(tweets[0])
 
     # Convert to NumPy array to facilitate indexing
     tweets = np.array(tweets)

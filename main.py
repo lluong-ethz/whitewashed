@@ -7,6 +7,7 @@ import torch
 import pickle
 from models.rnn import *
 from sklearn.feature_extraction.text import TfidfVectorizer
+from preprocessing import *
 
 def main():
     full = False
@@ -20,6 +21,8 @@ def main():
     else:
         load_tweets(TRAIN_POS, 0, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
+    
+    tweets, labels = preprocess(tweets, labels)
 
     # Convert to NumPy array to facilitate indexing
     tweets = np.array(tweets)

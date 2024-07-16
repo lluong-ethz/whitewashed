@@ -3,8 +3,6 @@ from itertools import groupby
 from utils import *
 import string
 
-# TODO: why is text looking super weird?? did I split twice?
-
 def delete_duplicates(tweets, labels):
     seen = set()
     indices = []
@@ -101,6 +99,15 @@ def remove_null_strings(tweets):
                 cleaned.append(word)
         outputs.append(cleaned)
     return outputs
+
+def pad_tweets(tweets):
+    max_len = max(len(tweet) for tweet in tweets)
+
+    def pad_tweet(tweet, max_len, pad_token="<PAD>"):
+        return tweet + [pad_token] * (max_len - len(tweet))
+
+    return [pad_tweet(tweet, max_len) for tweet in tweets]
+
  
 def preprocess(tweets, labels):
     tweets = [tweet.split() for tweet in tweets]
@@ -114,12 +121,14 @@ def preprocess(tweets, labels):
     tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
 
     tweets = remove_words(tweets, USER_URL)
-    tweets = remove_words(tweets, NEUTRAL_WORDS)
+
+    # really bad for performance!
+    #tweets = remove_words(tweets, NEUTRAL_WORDS)
 
     tweets = expand_abbreviations(tweets, ABBREVIATIONS)
 
     tweets = remove_null_strings(tweets)
-    print(tweets[0])
+    tweets = pad_tweets(tweets)
 
     return tweets, labels
 

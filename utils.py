@@ -3,9 +3,11 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import re
 from preprocessing import *
-#from keras.preprocessing.text import Tokenizer
-#from keras.utils import pad_sequences
-  
+from collections import Counter
+
+# from keras.preprocessing.text import Tokenizer
+# from keras.utils import pad_sequences
+
 
 SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
 SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
@@ -18,11 +20,11 @@ GLOVE_TWEET_200D = 'data/glove_twitter/glove.twitter.27B.200d.txt'
 
 
 def load_tweets(filename, label, tweets, labels):
-        with open(filename, 'r', encoding='utf-8') as f:
-            for line in f:
-                tweets.append(line.rstrip())
-                labels.append(label)
-    
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            tweets.append(line.rstrip())
+            labels.append(label)
+
 
 def split_train_test(tweets, labels, seed):
     np.random.seed(seed)
@@ -84,3 +86,25 @@ def get_basic_metrics(pred, gt):
     print("RECALL: " + str(recall_score(gt, pred)))
     print("F1: " + str(f1_score(gt, pred)))
     print("PRECISION: " + str(precision_score(gt, pred)))
+
+
+# !/usr/bin/env python3
+from collections import Counter
+
+
+def build_vocab(tweets):
+    vocabulary = {}
+    tokens = []
+    for tweet in tweets:
+        for word in tweet.split():
+            tokens.append(word)
+
+    # We only keep the 5000 most frequent words, both to reduce the computational cost and reduce overfitting
+    counter = Counter(tokens)
+    most_common_words = counter.most_common(5000)
+    most_common_words_len = len(most_common_words)
+
+    for index in range(most_common_words_len):
+        word = most_common_words[index][0]
+        vocabulary[word] = index
+    return vocabulary

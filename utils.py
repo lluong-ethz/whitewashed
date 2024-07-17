@@ -34,6 +34,18 @@ def split_train_test(tweets, labels, seed):
 
     return tweets[train_indices], tweets[val_indices], labels[train_indices], labels[val_indices]
 
+
+def split_train_test(tweets, seed):
+    np.random.seed(seed)
+
+    shuffled_indices = np.random.permutation(len(tweets))
+    split_idx = int(0.9 * len(tweets))
+    train_indices = shuffled_indices[:split_idx]
+    val_indices = shuffled_indices[split_idx:]
+
+    return train_indices, val_indices
+
+
 def get_tokens(x_train, x_val):
     tokenizer = Tokenizer(num_words=5000)
     tokenizer.fit_on_texts(x_train)
@@ -46,6 +58,7 @@ def get_tokens(x_train, x_val):
     tokens_val = pad_sequences(tokens_val, maxlen=max_sequence_length)
 
     return tokens_train, tokens_val
+
 
 def get_top_pos_neg(model_features, words, k):
     # increasing order
@@ -64,6 +77,7 @@ def get_top_pos_neg(model_features, words, k):
     for i in top_pos:
         print(words[i], model_features[i])
     print()
+
 
 def get_basic_metrics(pred, gt):
     print("ACCURACY: " + str(accuracy_score(gt, pred)))

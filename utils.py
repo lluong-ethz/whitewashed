@@ -18,6 +18,9 @@ GLOVE_WIKI_50D = 'data/glove_wiki/glove.6B.50d.txt'
 GLOVE_TWEET_50D = 'data/glove_twitter/glove.twitter.27B.50d.txt'
 GLOVE_TWEET_200D = 'data/glove_twitter/glove.twitter.27B.200d.txt'
 
+def tokenize_tweets(tweets, tokenizer):
+    return tokenizer(tweets, padding="max_length", truncation=True)  
+
 
 def load_tweets(filename, label, tweets, labels):
     with open(filename, 'r', encoding='utf-8') as f:
@@ -37,6 +40,7 @@ def split_train_test(tweets, labels, seed):
     return tweets[train_indices], tweets[val_indices], labels[train_indices], labels[val_indices]
 
 
+<<<<<<< Updated upstream
 def split_train_test(tweets, seed):
     np.random.seed(seed)
 
@@ -49,6 +53,9 @@ def split_train_test(tweets, seed):
 
 
 def get_tokens(x_train, x_val):
+=======
+def get_tokens_rnn(x_train, x_val):
+>>>>>>> Stashed changes
     tokenizer = Tokenizer(num_words=5000)
     tokenizer.fit_on_texts(x_train)
     tokens_train = tokenizer.texts_to_sequences(x_train)

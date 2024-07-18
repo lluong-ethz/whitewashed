@@ -24,14 +24,9 @@ def main():
     else:
         load_tweets(TRAIN_POS, 0, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
-    
-<<<<<<< Updated upstream
-    print(tweets[0])
-    tweets, labels = preprocess(tweets, labels)
-    print(tweets[0])
 
-=======
->>>>>>> Stashed changes
+    # tweets, labels = preprocess(tweets, labels)
+    
     # Convert to NumPy array to facilitate indexing
     tweets = np.array(tweets)
     labels = np.array(labels)

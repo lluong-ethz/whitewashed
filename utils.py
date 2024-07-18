@@ -40,22 +40,7 @@ def split_train_test(tweets, labels, seed):
     return tweets[train_indices], tweets[val_indices], labels[train_indices], labels[val_indices]
 
 
-<<<<<<< Updated upstream
-def split_train_test(tweets, seed):
-    np.random.seed(seed)
-
-    shuffled_indices = np.random.permutation(len(tweets))
-    split_idx = int(0.9 * len(tweets))
-    train_indices = shuffled_indices[:split_idx]
-    val_indices = shuffled_indices[split_idx:]
-
-    return train_indices, val_indices
-
-
-def get_tokens(x_train, x_val):
-=======
 def get_tokens_rnn(x_train, x_val):
->>>>>>> Stashed changes
     tokenizer = Tokenizer(num_words=5000)
     tokenizer.fit_on_texts(x_train)
     tokens_train = tokenizer.texts_to_sequences(x_train)

@@ -2,7 +2,7 @@
 import numpy as np
 from utils import load_tweets, split_train_test, get_top_pos_neg, get_basic_metrics, build_vocab
 from embeddings.tfidf import transform_tweets_to_tfidf
-from models.naive_bayes import train_naive_bayes, predict_naive_bayes
+from models.naivebayes import train_naive_bayes, predict_naive_bayes
 
 
 def main():

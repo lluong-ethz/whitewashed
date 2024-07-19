@@ -11,6 +11,17 @@ import numpy as np
 from utils import get_basic_metrics, get_top_pos_neg, load_tweets, split_train_test, build_vocab
 
 
+def split_train_test(tweets, seed):
+    np.random.seed(seed)
+
+    shuffled_indices = np.random.permutation(len(tweets))
+    split_idx = int(0.9 * len(tweets))
+    train_indices = shuffled_indices[:split_idx]
+    val_indices = shuffled_indices[split_idx:]
+
+    return train_indices, val_indices
+
+
 def create_bilstm_model(vocab_size, embedding_dim, input_length):
     model = Sequential()
     model.add(Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=input_length))
@@ -21,7 +32,7 @@ def create_bilstm_model(vocab_size, embedding_dim, input_length):
     return model
 
 
-def train_bilstm(model, X_train, Y_train, epochs=5, batch_size=32):
+def train_bilstm(model, X_train, Y_train, epochs=1, batch_size=32):
     model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
     return model
 
@@ -45,7 +56,7 @@ def main():
     tweets = np.array(tweets)
     labels = np.array(labels)
 
-    train_indices, val_indices = split_train_test(tweets, seed=1)
+    train_indices, val_indices = split_train_test(tweets, seed=1, )
 
     tokenizer = Tokenizer()
     tokenizer.fit_on_texts(tweets)
@@ -67,12 +78,9 @@ def main():
 
     # Train model
     model = train_bilstm(bilstm_model, X_train, Y_train)
-    model.fit(X_train, Y_train)
-
-    y_pred = model.predict(X_val)
 
     # Predict on validation set
-    y_pred = predict_bilstm(bilstm_model, X_val)
+    y_pred = predict_bilstm(model, X_val)
 
     # Print metrics
     get_basic_metrics(y_pred, Y_val)

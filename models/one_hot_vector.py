@@ -8,7 +8,18 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
-from utils import load_tweets, split_train_test, get_top_pos_neg, get_basic_metrics, build_vocab
+from utils import load_tweets, get_basic_metrics, build_vocab
+
+
+def split_train_test(tweets, seed):
+    np.random.seed(seed)
+
+    shuffled_indices = np.random.permutation(len(tweets))
+    split_idx = int(0.9 * len(tweets))
+    train_indices = shuffled_indices[:split_idx]
+    val_indices = shuffled_indices[split_idx:]
+
+    return train_indices, val_indices
 
 
 # train machine learning model to predict the label

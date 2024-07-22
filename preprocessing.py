@@ -2,6 +2,9 @@ import re
 from itertools import groupby
 from utils import *
 import string
+from wordsegment import load, segment
+import numpy as np
+
 
 def delete_duplicates(tweets, labels):
     seen = set()
@@ -12,8 +15,15 @@ def delete_duplicates(tweets, labels):
             seen.add(tuple(tweets[i]))
     return [tweets[i] for i in indices], [labels[i] for i in indices]
 
+def remove_user_mentions(tweets):
+    return [word for word in tweets if word != "<user>"]
+
+def remove_hashtags(tweets):
+    return [[word[1:] if word.startswith("#") else word for word in tweet] for tweet in tweets]
+
 def remove_repeated(tweets):
-    return [[re.sub(r'(.)\1{2,}', '', word) for word in tweet] for tweet in tweets]
+    return [[re.sub(r'(.)\1+', r'\1', word) for word in tweet] for tweet in tweets]
+    # return [[re.sub(r'(.)\1{2,}', '', word) for word in tweet] for tweet in tweets]
 
 def remove_punctuation(tweets):
     return [[word.translate(str.maketrans('', '', string.punctuation)) for word in tweet] for tweet in tweets]
@@ -71,7 +81,46 @@ def handle_negation(tweets, negations, positives, negatives):
         output.append(copy_tweet)
     return output
 
+def replace_emoji(word):
+    if "<3" in word:
+        return "love"
+    
+    if ":)" in word or "(:" in word or ":-)" in word or ":-D" in word:
+        return "happy"
+    
+    if ":(" in word or "):" in word or ":/" in word or ":'(" in word:
+        return "sad"
+    
+    if ":-P" in word:
+        return "playful"
+    
+    return word
+
+def replace_emojis(tweets):
+    return [[replace_emoji(word) for word in tweet] for tweet in tweets]
+
+def process_hashtags(tweets):    
+    processed_tweets = []
+    for tweet in tweets:
+        processed_tweet = []
+        for word in tweet:
+            if word.startswith('#'):
+                word_without_hash = word[1:]
+                if word_without_hash:  # Ensure the word is not empty
+                    try:
+                        segmented_words = " ".join(segment(word_without_hash))
+                    except ValueError:  # Handle the case where segment returns an empty sequence
+                        segmented_words = word_without_hash  # Fallback to the original word without hash
+                    processed_tweet.extend(segmented_words.split())
+                else:
+                    processed_tweet.append(word)
+            else:
+                processed_tweet.append(word)
+        processed_tweets.append(processed_tweet)
+    return processed_tweets
+
 ABBREVIATIONS = {
+    "dunno": "do not know",
     "omg": "oh my god",
     "lol": "laugh out loud",
     "idk": "i don't know",
@@ -110,16 +159,19 @@ def pad_tweets(tweets):
 
  
 def preprocess(tweets, labels):
+    load()
+
     tweets = [tweet.split() for tweet in tweets]
 
     tweets, labels = delete_duplicates(tweets, labels)
-   
-    tweets = remove_repeated(tweets)
     tweets = lowercase(tweets)
+
+    tweets = remove_user_mentions(tweets)
+    tweets = process_hashtags(tweets)
+    tweets = replace_emojis(tweets)
+    tweets = remove_repeated(tweets)
+    # tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
     tweets = remove_punctuation(tweets)
-
-    tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
-
     tweets = remove_words(tweets, USER_URL)
 
     # really bad for performance!
@@ -147,8 +199,5 @@ def main():
     
     tweets, labels = preprocess(tweets, labels)
 
-if __name__ == '__main__':
+if name == '__main__':
     main()
-
-
-

@@ -24,29 +24,41 @@ def main():
     else:
         load_tweets(TRAIN_POS, 0, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
+    
+    tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-uncased')
+
+    #max_length = 0
+    #for tweet in tweets:
+    #    tokenized_tweet = tokenizer(tweet, truncation=False)
+    #    tweet_length = len(tokenized_tweet['input_ids'])
+    #    if tweet_length > max_length:
+    #        max_length = tweet_length
+
+    # 103
+    #print("Length of the largest tweet:", max_length)
 
     # tweets, labels = preprocess(tweets, labels)
     
     # Convert to NumPy array to facilitate indexing
-    tweets = np.array(tweets)
-    labels = np.array(labels)
-    X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
+    #tweets = np.array(tweets)
+    #labels = np.array(labels)
+    #X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
 
     # BERT
-    tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-uncased')
-    X_train = tokenize_tweets(X_train.tolist(), tokenizer)
-    X_val = tokenize_tweets(X_val.tolist(), tokenizer)
+    #tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-uncased')
+    #X_train = tokenize_tweets(X_train.tolist(), tokenizer)
+    #X_val = tokenize_tweets(X_val.tolist(), tokenizer)
 
-    batch_size = 16
+    #batch_size = 4
 
-    train_dataset = TensorDataset(torch.tensor(X_train['input_ids']), torch.tensor(X_train['attention_mask']), torch.tensor(Y_train))
-    test_dataset = TensorDataset(torch.tensor(X_val['input_ids']), torch.tensor(X_val['attention_mask']), torch.tensor(Y_val))
+    #train_dataset = TensorDataset(torch.tensor(X_train['input_ids']), torch.tensor(X_train['attention_mask']), torch.tensor(Y_train))
+    #test_dataset = TensorDataset(torch.tensor(X_val['input_ids']), torch.tensor(X_val['attention_mask']), torch.tensor(Y_val))
 
-    train_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    #train_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
+    #test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
-    model = train_bert(train_loader)
-    test_bert(test_loader, model)
+    #model = train_bert(train_loader)
+    #test_bert(test_loader, model)
 
 
     #print([tweet['input_ids'][0] for tweet in X_train])

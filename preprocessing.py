@@ -6,6 +6,7 @@ from wordsegment import load, segment
 import numpy as np
 
 
+# Delete tweets that appear more than once
 def delete_duplicates(tweets, labels):
     seen = set()
     indices = []
@@ -15,19 +16,24 @@ def delete_duplicates(tweets, labels):
             seen.add(tuple(tweets[i]))
     return [tweets[i] for i in indices], [labels[i] for i in indices]
 
+# Remove user mentions "<user>"
 def remove_user_mentions(tweets):
     return [word for word in tweets if word != "<user>"]
 
+# Remove hashtags
 def remove_hashtags(tweets):
     return [[word[1:] if word.startswith("#") else word for word in tweet] for tweet in tweets]
 
+# If more than 2 consecutive characters are the same, keep to 2
 def remove_repeated(tweets):
     return [[re.sub(r'(.)\1+', r'\1', word) for word in tweet] for tweet in tweets]
     # return [[re.sub(r'(.)\1{2,}', '', word) for word in tweet] for tweet in tweets]
 
+# Remove punctuation 
 def remove_punctuation(tweets):
     return [[word.translate(str.maketrans('', '', string.punctuation)) for word in tweet] for tweet in tweets]
 
+# sets all words in lowercase
 def lowercase(tweets):
      return [[w.lower().replace("\n", "") for w in tweet] for tweet in tweets]
 
@@ -47,14 +53,12 @@ NEUTRAL_WORDS = [
     "wasn’t", "we", "were", "weren’t", "what", "when", "where", "which", "while", 
     "who", "whom", "why", "will", "with", "would", "wouldn’t", "you", "your", "yours"
 ]
-
+# Filter words in tweets given a set of words to remove
 def remove_words(tweets, words_to_remove):
     output = []
 
     for tweet in tweets:
-    
         filtered_words = [word for word in tweet if word not in words_to_remove]
-    
         output.append(filtered_words)
     
     return output
@@ -62,7 +66,7 @@ def remove_words(tweets, words_to_remove):
 NEGATIONS = ["not", "no", "never", "without", "hardly", "rarely", "seldom"]
 EXAMPLE_POSITIVE = ["happy", "good", "love", "great", "wonderful", "beautiful", "celebrate", "best", "terrific", "delighted", "joy"]
 EXAMPLE_NEGATIVE = ["sad", "bad", "hate", "terrible", "awful", "ugly", "mourn", "worst", "awful", "disappointed", "sorrow"]
-
+# Replace negations with corresponding word ("not happy" -> "sad")
 def handle_negation(tweets, negations, positives, negatives):
     output = []
     for tweet in tweets:
@@ -81,11 +85,12 @@ def handle_negation(tweets, negations, positives, negatives):
         output.append(copy_tweet)
     return output
 
-def replace_emoji(word):
+# replace emoticon with a word
+def replace_emoticon(word):
     if "<3" in word:
         return "love"
     
-    if ":)" in word or "(:" in word or ":-)" in word or ":-D" in word:
+    if ":)" in word or "(:" in word or ":-)" in word or ":-D" in word or ":D" in word:
         return "happy"
     
     if ":(" in word or "):" in word or ":/" in word or ":'(" in word:
@@ -94,11 +99,16 @@ def replace_emoji(word):
     if ":-P" in word:
         return "playful"
     
+    if "XD" in word:
+        return "laugh"
+    
     return word
 
-def replace_emojis(tweets):
-    return [[replace_emoji(word) for word in tweet] for tweet in tweets]
+# replace in all tweets emoticons with corresponding word
+def replace_emoticons(tweets):
+    return [[replace_emoticon(word) for word in tweet] for tweet in tweets]
 
+# Remove hashtags and then segment words ("#iloveyou" -> "i love you")
 def process_hashtags(tweets):    
     processed_tweets = []
     for tweet in tweets:
@@ -135,10 +145,11 @@ ABBREVIATIONS = {
     "xo": "kisses and hugs",
     "xoxo": "kisses and hugs",
 }
-
+# expand abberviations in tweets
 def expand_abbreviations(tweets, abbreviation_dict):
     return [[abbreviation_dict.get(word, word) for word in tweet] for tweet in tweets]
 
+# when splitting a tweet, remove null strings
 def remove_null_strings(tweets):
     outputs = []
     for tweet in tweets:
@@ -149,15 +160,15 @@ def remove_null_strings(tweets):
         outputs.append(cleaned)
     return outputs
 
+# pad tweets to same length
 def pad_tweets(tweets):
     max_len = max(len(tweet) for tweet in tweets)
-
     def pad_tweet(tweet, max_len, pad_token="<PAD>"):
         return tweet + [pad_token] * (max_len - len(tweet))
 
     return [pad_tweet(tweet, max_len) for tweet in tweets]
 
- 
+# pre-process all tweets with previous auxiliary methods
 def preprocess(tweets, labels):
     load()
 
@@ -168,7 +179,7 @@ def preprocess(tweets, labels):
 
     tweets = remove_user_mentions(tweets)
     tweets = process_hashtags(tweets)
-    tweets = replace_emojis(tweets)
+    tweets = replace_emoticons(tweets)
     tweets = remove_repeated(tweets)
     # tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
     tweets = remove_punctuation(tweets)

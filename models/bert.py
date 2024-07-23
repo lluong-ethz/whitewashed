@@ -7,11 +7,12 @@ from transformers import AutoTokenizer, BertForSequenceClassification, AdamW, ge
 from sklearn.metrics import accuracy_score, classification_report
 from utils import *
 
-def train_bert(train_loader):
+# Train a BERT model
+def train_bert(train_loader, save_model = True):
     model = BertForSequenceClassification.from_pretrained("google-bert/bert-base-uncased")
 
-    #device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    #model.to(device)
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.to(device)
 
     optimizer = AdamW(model.parameters(), lr=5e-5)
 
@@ -30,8 +31,9 @@ def train_bert(train_loader):
         running_loss = 0.0
         for batch in train_loader:
             optimizer.zero_grad()
-            input_ids, attention_mask, labels = batch
-            #outputs = model(input_ids=input, labels = labels).squeeze()
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
             outputs = model(input_ids=input_ids, attention_mask = attention_mask, labels = labels)
             loss = outputs.loss
             loss.backward()
@@ -40,9 +42,11 @@ def train_bert(train_loader):
             running_loss += loss.item()
         print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader)}")
     
-    torch.save(model, 'bert.pt')
+    if(save_model):
+        torch.save(model, 'bert.pt')
     return model
 
+# Testing BERT model
 def test_bert(val_loader, model):
     model.eval()
     all_preds = []
@@ -54,7 +58,7 @@ def test_bert(val_loader, model):
             logits = outputs.logits
             preds = torch.argmax(logits, dim=-1)
             all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels)
+            all_labels.extend(labels.cpu().numpy())
 
     accuracy = accuracy_score(all_labels, all_preds)
     report = classification_report(all_labels, all_preds)

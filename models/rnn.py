@@ -4,8 +4,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from utils import *
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
 
+# Class for RNN
 class RNN(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim):
         super(RNN, self).__init__()
@@ -22,7 +23,8 @@ class RNN(nn.Module):
         output = self.sigmoid(output)
         return output
 
-def train_rnn(train_loader):
+# Training RNN
+def train_rnn(train_loader, save_model = True):
     vocab_size = 5000
     embedding_dim = 100
     hidden_dim = 128
@@ -34,7 +36,6 @@ def train_rnn(train_loader):
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # 10, 25
     num_epochs = 25
     model.train()
     for epoch in range(num_epochs):
@@ -45,22 +46,33 @@ def train_rnn(train_loader):
             loss.backward()
             optimizer.step()
         print(f'Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}')
-    torch.save(model, 'rnn.pt')
+
+    if(save_model):
+        torch.save(model, 'rnn.pt')
     return model
-    
+
+# Testing RNN
 def test_rnn(test_loader, model):
     model.eval()
-    correct = 0
-    total = 0
+    #correct = 0
+    #total = 0
+    all_preds = []
+    all_labels = []  
     with torch.no_grad():
         for inputs, labels in test_loader:
             outputs = model(inputs).squeeze()
             predicted = (outputs > 0.5).float()
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            #total += labels.size(0)
+            #correct += (predicted == labels).sum().item()
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-    accuracy = correct / total
-    print(f'Test Accuracy: {accuracy * 100:.2f}%')
+    #accuracy = correct / total
+    #print(f'Test Accuracy: {accuracy * 100:.2f}%')
+    accuracy = accuracy_score(all_labels, all_preds)
+    report = classification_report(all_labels, all_preds)
+    print(f"Validation Accuracy: {accuracy}")
+    print(report)
 
 
 

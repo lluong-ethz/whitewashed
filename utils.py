@@ -1,35 +1,37 @@
-import pickle
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-import re
 from preprocessing import *
 from collections import Counter
-
 # from keras.preprocessing.text import Tokenizer
 # from keras.utils import pad_sequences
 
 
+# Global variables for tweet paths
 SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
 SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
 TRAIN_NEG = 'data/twitter-datasets/train_neg_full.txt'
 TRAIN_POS = 'data/twitter-datasets/train_pos_full.txt'
 
+# Global variables for Glove paths
 GLOVE_WIKI_50D = 'data/glove_wiki/glove.6B.50d.txt'
 GLOVE_TWEET_50D = 'data/glove_twitter/glove.twitter.27B.50d.txt'
 GLOVE_TWEET_200D = 'data/glove_twitter/glove.twitter.27B.200d.txt'
 
+
+# Method to tokenize a list of tweets given a tokenizer
 def tokenize_tweets(tweets, tokenizer):
     return tokenizer(tweets, padding="max_length", truncation=True)  
 
 
+# Loading tweets from a file path
 def load_tweets(filename, label, tweets, labels):
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             tweets.append(line.rstrip())
             labels.append(label)
 
-
-def split_train_test(tweets, labels, seed):
+# Splitting the data in train / val
+def split_train_test(tweets, labels, seed = 1):
     np.random.seed(seed)
 
     shuffled_indices = np.random.permutation(len(tweets))
@@ -40,20 +42,21 @@ def split_train_test(tweets, labels, seed):
     return tweets[train_indices], tweets[val_indices], labels[train_indices], labels[val_indices]
 
 
+# Tokenize tweets for the RNN model
 def get_tokens_rnn(x_train, x_val):
     tokenizer = Tokenizer(num_words=5000)
     tokenizer.fit_on_texts(x_train)
     tokens_train = tokenizer.texts_to_sequences(x_train)
     tokens_val = tokenizer.texts_to_sequences(x_val)
 
-    # using average length of word in English
+    # using average length of a word in English
     max_sequence_length = 35
     tokens_train = pad_sequences(tokens_train, maxlen=max_sequence_length)
     tokens_val = pad_sequences(tokens_val, maxlen=max_sequence_length)
 
     return tokens_train, tokens_val
 
-
+# If doing logistic regresion, obtain most "positive / negative" words
 def get_top_pos_neg(model_features, words, k):
     # increasing order
     sorted_features = np.argsort(model_features)
@@ -72,7 +75,7 @@ def get_top_pos_neg(model_features, words, k):
         print(words[i], model_features[i])
     print()
 
-
+# Basic metrics for classification
 def get_basic_metrics(pred, gt):
     print("ACCURACY: " + str(accuracy_score(gt, pred)))
     print("RECALL: " + str(recall_score(gt, pred)))
@@ -83,7 +86,7 @@ def get_basic_metrics(pred, gt):
 # !/usr/bin/env python3
 from collections import Counter
 
-
+# Build vocabulary of tweets
 def build_vocab(tweets):
     vocabulary = {}
     tokens = []

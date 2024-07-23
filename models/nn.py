@@ -3,9 +3,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+from sklearn.metrics import accuracy_score, classification_report
 from utils import *
 
 class simple_nn(nn.Module):
+    # Defining architecture of model
     def __init__(self, input_dim):
         super(simple_nn, self).__init__()
         self.fc1 = nn.Linear(input_dim, 512)
@@ -29,12 +31,12 @@ class simple_nn(nn.Module):
         x = self.sigmoid(self.fc5(x))
         return x
 
-def train_simple_nn(train_loader, num_features):
+# Training a neural network
+def train_simple_nn(train_loader, num_features, save_model = True):
     model = simple_nn(input_dim=num_features)
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    #1, 25, 100
     epochs = 30
     for epoch in range(epochs):
         model.train()
@@ -49,22 +51,31 @@ def train_simple_nn(train_loader, num_features):
         
         print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader)}")
     
-    torch.save(model, 'nn.pt')
+    if(save_model):
+        torch.save(model, 'nn.pt')
     return model
 
+# Testing neural network
 def test_simple_nn(test_loader, model):
-    # Testing
     model.eval()
-    correct = 0
-    total = 0
+    #correct = 0
+    #total = 0
+    all_preds = []
+    all_labels = []  
     with torch.no_grad():
         for inputs, labels in test_loader:
             outputs = model(inputs).squeeze()
             predicted = (outputs > 0.5).float()
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            #total += labels.size(0)
+            #correct += (predicted == labels).sum().item()
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-    print(f'Test Accuracy: {correct / total:.4f}')
+    #print(f'Test Accuracy: {correct / total:.4f}')
+    accuracy = accuracy_score(all_labels, all_preds)
+    report = classification_report(all_labels, all_preds)
+    print(f"Validation Accuracy: {accuracy}")
+    print(report)
     
     
 

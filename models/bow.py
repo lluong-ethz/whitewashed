@@ -7,8 +7,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from sklearn.linear_model import LogisticRegression
 
-
-def bow(tweets, labels):
+# BoW pipeline
+def bow(tweets, labels, verbose = True):
 
     X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
 
@@ -25,8 +25,10 @@ def bow(tweets, labels):
     model_features = model.coef_[0]
     mapping = vectorizer.get_feature_names_out()
 
-    get_top_pos_neg(model_features, mapping, 10)
-
     y_pred = model.predict(X_val)
 
-    get_basic_metrics(y_pred, Y_val)
+    if(verbose):
+        get_top_pos_neg(model_features, mapping, 10)
+        get_basic_metrics(y_pred, Y_val)
+
+    return model

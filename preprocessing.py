@@ -26,7 +26,8 @@ def remove_hashtags(tweets):
 
 # If more than 2 consecutive characters are the same, keep to 2
 def remove_repeated(tweets):
-    return [[re.sub(r'(.)\1+', r'\1', word) for word in tweet] for tweet in tweets]
+    return [[re.sub(r'(.)\1{2,}', r'\1\1', word) for word in tweet] for tweet in tweets]
+    # return [[re.sub(r'(.)\1+', r'\1', word) for word in tweet] for tweet in tweets]
     # return [[re.sub(r'(.)\1{2,}', '', word) for word in tweet] for tweet in tweets]
 
 # Remove punctuation 
@@ -37,7 +38,7 @@ def remove_punctuation(tweets):
 def lowercase(tweets):
      return [[w.lower().replace("\n", "") for w in tweet] for tweet in tweets]
 
-USER_URL = ["<user>", "url"]
+USER_URL = ["<user>", "<url>"]
 NEUTRAL_WORDS = [
     "a", "about", "above", "after", "again", "against", "all", "am", "an", "and",
     "any", "are", "as", "at", "be", "because", "been", "before", "being", "between",
@@ -141,9 +142,11 @@ ABBREVIATIONS = {
     "btw": "by the way",
     "imho": "in my humble opinion",
     "imo": "in my opinion",
+    "fml": "fuck my life",
     "x": "kisses",
     "xo": "kisses and hugs",
     "xoxo": "kisses and hugs",
+    "thx": "thanks"
 }
 # expand abberviations in tweets
 def expand_abbreviations(tweets, abbreviation_dict):
@@ -181,8 +184,10 @@ def preprocess(tweets, labels):
     tweets = process_hashtags(tweets)
     tweets = replace_emoticons(tweets)
     tweets = remove_repeated(tweets)
+
     # tweets = handle_negation(tweets, NEGATIONS, EXAMPLE_POSITIVE, EXAMPLE_NEGATIVE)
-    tweets = remove_punctuation(tweets)
+    #tweets = remove_punctuation(tweets)
+
     tweets = remove_words(tweets, USER_URL)
 
     # really bad for performance!
@@ -191,24 +196,27 @@ def preprocess(tweets, labels):
     tweets = expand_abbreviations(tweets, ABBREVIATIONS)
 
     tweets = remove_null_strings(tweets)
-    tweets = pad_tweets(tweets)
+    #tweets = pad_tweets(tweets)
 
     return tweets, labels
 
 def main():
-    full = False
+    sample_tweets = [
+    ["worries", "fml", "tooo", "seeee", "youuuu"],
+    ["thiiis", "is", "aaamazing", "and", "coooool"],
+    ["whaaaaat", "a", "beauuutiful", "daaaay"],
+    ["heyy", "theeerreeee", "what's", "uuup"]
+    ]
 
-    tweets = []
-    labels = []
+    # Applying the function to the sample tweets
+    processed_tweets = remove_repeated(sample_tweets)
+    processed_tweets = expand_abbreviations(processed_tweets,ABBREVIATIONS)
 
-    if(not full):
-        load_tweets(SMALL_TRAIN_POS, 0, tweets, labels)
-        load_tweets(SMALL_TRAIN_NEG, 1, tweets, labels)
-    else:
-        load_tweets(TRAIN_POS, 0, tweets, labels)
-        load_tweets(TRAIN_NEG, 0, tweets, labels)
-    
-    tweets, labels = preprocess(tweets, labels)
+    # Display the results
+    for original, processed in zip(sample_tweets, processed_tweets):
+        print("Original:", original)
+        print("Processed:", processed)
+        print()
 
-if name == '__main__':
+if __name__ == '__main__':
     main()

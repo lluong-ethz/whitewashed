@@ -34,7 +34,7 @@ def tweet_to_glove(tweet, embeddings_index, embedding_dim=50):
 
 def all_tweets_to_glove(tweets, path, embedding_dim = 50):
     embeddings_index = load_glove_embeddings(path)
-    return [tweet_to_glove(tweet, embeddings_index, embedding_dim = embedding_dim) for tweet in tweets]
+    return [tweet_to_glove(tweet.split(), embeddings_index, embedding_dim = embedding_dim) for tweet in tweets]
     
 
     

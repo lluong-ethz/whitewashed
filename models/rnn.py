@@ -36,7 +36,7 @@ def train_rnn(train_loader, save_model = True):
     criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    num_epochs = 25
+    num_epochs = 20
     model.train()
     for epoch in range(num_epochs):
         for inputs, labels in train_loader:

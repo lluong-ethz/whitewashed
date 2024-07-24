@@ -19,13 +19,16 @@ def main():
     labels = []
 
     if(not full):
-        load_tweets(SMALL_TRAIN_POS, 0, tweets, labels)
-        load_tweets(SMALL_TRAIN_NEG, 1, tweets, labels)
+        load_tweets(SMALL_TRAIN_POS, 1, tweets, labels)
+        load_tweets(SMALL_TRAIN_NEG, 0, tweets, labels)
     else:
-        load_tweets(TRAIN_POS, 0, tweets, labels)
+        load_tweets(TRAIN_POS, 1, tweets, labels)
         load_tweets(TRAIN_NEG, 0, tweets, labels)
     
-    tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-uncased')
+    #tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-uncased')
+
+    model = torch.load('bert.pt')
+    submission(model)
 
     #max_length = 0
     #for tweet in tweets:

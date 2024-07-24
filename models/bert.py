@@ -48,12 +48,16 @@ def train_bert(train_loader, save_model = True):
 
 # Testing BERT model
 def test_bert(val_loader, model):
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model.to(device)
     model.eval()
     all_preds = []
     all_labels = []     
     with torch.no_grad():
         for batch in val_loader:
-            input_ids, attention_mask, labels = batch
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
             outputs = model(input_ids=input_ids, attention_mask = attention_mask)
             logits = outputs.logits
             preds = torch.argmax(logits, dim=-1)

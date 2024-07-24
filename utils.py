@@ -1,9 +1,10 @@
 import numpy as np
+#import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from preprocessing import *
 from collections import Counter
-# from keras.preprocessing.text import Tokenizer
-# from keras.utils import pad_sequences
+from keras.preprocessing.text import Tokenizer
+from keras.utils import pad_sequences
 
 
 # Global variables for tweet paths
@@ -11,10 +12,14 @@ SMALL_TRAIN_NEG = 'data/twitter-datasets/train_neg.txt'
 SMALL_TRAIN_POS = 'data/twitter-datasets/train_pos.txt'
 TRAIN_NEG = 'data/twitter-datasets/train_neg_full.txt'
 TRAIN_POS = 'data/twitter-datasets/train_pos_full.txt'
+TEST_SET = 'data/twitter-datasets/test_data.txt'
 
 # Global variables for Glove paths
 GLOVE_WIKI_50D = 'data/glove_wiki/glove.6B.50d.txt'
+GLOVE_WIKI_100D = 'data/glove_wiki/glove.6B.100d.txt'
+GLOVE_WIKI_200D = 'data/glove_wiki/glove.6B.200d.txt'
 GLOVE_TWEET_50D = 'data/glove_twitter/glove.twitter.27B.50d.txt'
+GLOVE_TWEET_100D = 'data/glove_twitter/glove.twitter.27B.100d.txt'
 GLOVE_TWEET_200D = 'data/glove_twitter/glove.twitter.27B.200d.txt'
 
 
@@ -25,10 +30,19 @@ def tokenize_tweets(tweets, tokenizer):
 
 # Loading tweets from a file path
 def load_tweets(filename, label, tweets, labels):
+    indices = []
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
-            tweets.append(line.rstrip())
-            labels.append(label)
+            # separate indices if using test set
+            if(filename == TEST_SET):
+                index, tweet = line.split(',', 1)
+                indices.append(int(index))
+                tweets.append(tweet)
+                labels.append(label)
+            else:
+                tweets.append(line.rstrip())
+                labels.append(label)
+    return indices
 
 # Splitting the data in train / val
 def split_train_test(tweets, labels, seed = 1):
@@ -103,3 +117,22 @@ def build_vocab(tweets):
         word = most_common_words[index][0]
         vocabulary[word] = index
     return vocabulary
+
+def submission(model):
+    tweets = []
+    dummy = []
+
+    indices = load_tweets(TEST_SET, 0, tweets, dummy)
+
+    # TODO: do some pre-processing?
+
+    predictions = model(tweets)
+    labels = [1 if pred > 0.5 else -1 for pred in predictions]
+
+    df = pd.DataFrame({
+    'Id': indices,
+    'Prediction': labels
+    }) 
+
+    df.to_csv("submission.csv", index = False)
+

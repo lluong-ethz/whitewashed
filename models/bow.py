@@ -2,15 +2,12 @@
 import pickle
 import numpy as np
 from utils import *
-
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.feature_extraction.text import CountVectorizer
-
 from sklearn.linear_model import LogisticRegression
 
 # BoW pipeline
-def bow(tweets, labels, verbose = True):
-
-    X_train, X_val, Y_train, Y_val = split_train_test(tweets, labels, 1)
+def bow(X_train, X_val, Y_train, Y_val, verbose = True):
 
     # We only keep the 5000 most frequent words, both to reduce the computational cost and reduce overfitting
     vectorizer = CountVectorizer(max_features=5000)
@@ -29,6 +26,11 @@ def bow(tweets, labels, verbose = True):
 
     if(verbose):
         get_top_pos_neg(model_features, mapping, 10)
-        get_basic_metrics(y_pred, Y_val)
+
+        accuracy = accuracy_score(Y_val, y_pred) 
+        report = classification_report(Y_val, y_pred)
+        print(f"Validation Accuracy: {accuracy}")
+        print(report)
+
 
     return model

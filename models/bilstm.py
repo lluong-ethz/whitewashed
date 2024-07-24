@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, Bidirectional, LSTM, Dense, LayerNormalization, BatchNormalization
+from tensorflow.keras.layers import Embedding, Bidirectional, LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from utils import get_basic_metrics, load_tweets, split_train_test

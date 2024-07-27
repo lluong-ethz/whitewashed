@@ -2,14 +2,18 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
-from transformers import AutoTokenizer, BertForSequenceClassification, AdamW, get_scheduler
+from transformers import BertForSequenceClassification, AdamW, get_scheduler, RobertaForSequenceClassification
 from sklearn.metrics import accuracy_score, classification_report
 from utils import *
 
 # Train a BERT model
-def train_bert(train_loader, save_model = True):
-    model = BertForSequenceClassification.from_pretrained("google-bert/bert-base-uncased")
+def train_bert(train_loader, save_model = True, bert_tweet = False):
+
+    model = None
+    if(bert_tweet):
+        model = RobertaForSequenceClassification.from_pretrained('vinai/bertweet-base')
+    else:
+        model = BertForSequenceClassification.from_pretrained("google-bert/bert-base-uncased")
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     model.to(device)
@@ -43,7 +47,10 @@ def train_bert(train_loader, save_model = True):
         print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader)}")
     
     if(save_model):
-        torch.save(model, 'bert.pt')
+        if(bert_tweet):
+            torch.save(model, 'bert_tweet.pt')
+        else:
+            torch.save(model, 'bert.pt')
     return model
 
 # Testing BERT model

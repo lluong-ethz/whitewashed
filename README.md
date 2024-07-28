@@ -61,7 +61,8 @@ We first suppose you already have the Twitter dataset as it was given to us. Mor
 ## Experiments
 
 For the baseline models, you can run the experiments from [Baselines notebook](src/baselines_notebook.ipynb) (and run the relevant cells depending on which models / embeddings you want to use). \
-For the BERT model, you can run the experiments from [Bert notebook](src/run_bert.ipynb). \
+For the BERT model, you can run the experiments from [Bert notebook](src/run_bert.ipynb). We recommend running the experiments for BERT on Google Colab or a cluster with strong GPU capabilities (we used the Nvidia L4 GPU), and not on a local machine.
+\
 Note: you need to run all your experiments from `src`. 
 
 

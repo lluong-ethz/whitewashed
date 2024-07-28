@@ -1,28 +1,72 @@
 # Whitewashed - ETHZ CIL Text Classification 2024 
 
-The use of microblogging and text messaging as a medium of communication has greatly increased over the past 10 years. Such large volumes of data amplify the need for automatic methods to understand the opinion conveyed in a text.
+##### Table of Contents  
+[Introduction](#Intro)  
+[Setup](#Setup) 
+[Data](#Data)  
+[Experiments](#Experiments)  
+[Contact](#Contact)  
 
-## Training Data
-For this problem, we have acquired 2.5M tweets classified as either positive or negative.
 
-## Evaluation Metrics
-Your approach is evaluated according to the following criteria: Classification Accuracy
 
-## Build the Co-occurence Matrix
-To build a co-occurence matrix, run the following commands.  (Remember to put the data files
-in the correct locations)
+## Introduction
 
-Note that the cooc.py script takes a few minutes to run, and displays the number of tweets processed.
+This is the repository of our project for Tweet Sentiment Analysis in the ETHZ's CIL class, 2024 edition.
+In this repo you will find the source code, the project report, as well as indications on how to run experiments.
 
-- build_vocab.sh
-- cut_vocab.sh
-- python3 pickle_vocab.py
-- python3 cooc.py
+All the source code can be found under the folder `src`. \
+The data used can be found under `src\data`. \
+The embedding methods can be found under `src\embeddings`. \
+The models used can be found under `src\models`.
 
-##  Template for Glove Question
-Your task is to fill in the SGD updates to the template
-glove_template.py
+## Setup
 
-Once you tested your system on the small set of 10% of all tweets, we suggest you run on the full datasets train_pos_full.txt, train_neg_full.txt
+We suppose you have `conda` installed on your machine.
+You can create an environment with all the necessary dependencies with:
+```
+conda env create -f environment.yaml
+```
+You can then activate the environment with:
+```
+conda activate cil_twitter
+```
 
-## Instructions on how to download the remaining code/data (if needed)
+
+## Data
+We first suppose you already have the Twitter dataset as it was given to us. Moreover, you can obtain the Glove embeddings at [GloVe](https://nlp.stanford.edu/projects/glove/). You should download only the Wikipedia and Twitter pre-trained word vectors. The data organization should look like this
+
+```console
+├── data
+│   ├── glove_twitter
+│   │   ├── glove.twitter.27B.25d.txt
+│   │   ├── glove.twitter.27B.50d.txt
+│   │   ├── glove.twitter.27B.100d.txt
+│   │   ├── glove.twitter.27B.200d.txt  
+│   │   │   
+└───└── glove_wiki
+│   │   ├── glove.6B.50d.txt
+│   │   ├── glove.6B.100d.txt
+│   │   ├── glove.6B.200d.txt
+│   │   ├── glove.6B.300d.txt
+│   │   │   
+└───└── twitter-datasets
+        ├── test_data.txt
+        ├── train_neg_full.txt
+        ├── train_neg.txt
+        ├── train_pos_full.txt
+        ├── train_pos.txt
+```
+
+
+## Experiments
+
+For the baseline models, you can run the experiments from [Baselines notebook](src/baselines_notebook.ipynb) (and run the relevant cells depending on which models / embeddings you want to use). \
+For the BERT model, you can run the experiments from [Bert notebook](src/run_bert.ipynb). \
+Note: you need to run all your experiments from `src`. 
+
+
+## Contact
+You can contact the authors at:
+- sjerad@student.ethz.ch
+- eukwak@student.ethz.ch
+

@@ -1,9 +1,9 @@
 # Whitewashed - ETHZ CIL Text Classification 2024 
 
 ##### Table of Contents  
-[Introduction](#Intro)  
-[Setup](#Setup) 
-[Data](#Data)  
+[Introduction](#Intro) \
+[Setup](#Setup) \
+[Data](#Data)  \
 [Experiments](#Experiments)  
 [Contact](#Contact)  
 

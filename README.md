@@ -70,4 +70,6 @@ Note: you need to run all your experiments from `src`.
 You can contact the authors at:
 - sjerad@student.ethz.ch
 - eukwak@student.ethz.ch
+- mmultani@student.ethz.ch
+- lluong@student.ethz.ch
 
